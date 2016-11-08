@@ -14,12 +14,14 @@ import android.view.MenuItem;
 import com.example.tony.partymaker.API;
 import com.example.tony.partymaker.PartyAdapter;
 import com.example.tony.partymaker.R;
+import com.example.tony.partymaker.model.Data;
 import com.example.tony.partymaker.model.Party;
 
 
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +33,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AllPartyActivity extends AppCompatActivity {
 
     private PartyAdapter partyAdapter;
-    private ArrayList<Party> arrParty = new ArrayList<>(); // ?
+    private ArrayList<Data> parties = new ArrayList<>();
+    //Разобраться со структурой
+    private ArrayList<String> kek = new ArrayList<>();
+    private ArrayList<String> newKek = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,27 +45,38 @@ public class AllPartyActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        kek.addAll(newKek);
+
         final RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view_all);
         rv.setHasFixedSize(true);
+
+
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AllPartyActivity.this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(linearLayoutManager);
-        partyAdapter = new PartyAdapter(AllPartyActivity.this,arrParty);
+        partyAdapter = new PartyAdapter(AllPartyActivity.this,parties);
+
+        rv.setAdapter(partyAdapter);
 
        Retrofit retrofit = new Retrofit.Builder()
-               .baseUrl("")
+               .baseUrl("http://52.45.147.109/")
                .addConverterFactory(GsonConverterFactory.create())
                .build();
 
         final API service = retrofit.create(API.class);
 
-        final Call<Party> call = (Call<Party>) service.getParties();
+        final Call<Party> call = service.getParties();
         call.enqueue(new Callback<Party>() {
             @Override
             public void onResponse(Call<Party> call, Response<Party> response) {
-                if (response.body().getCode() == 200){
-                    arrParty.addAll(response.body());
+                if (response.isSuccessful()){
+                    int start = parties.size();
+                    List<Data> newParties = response.body().getData();
+                    parties.addAll(newParties);
+
+                    //Заставить адаптер показать новые строчки
+                    partyAdapter.notifyItemRangeInserted(start,newParties.size());
                 }
             }
 
@@ -106,7 +122,4 @@ public class AllPartyActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void q() {
-        arrParty = Party.;
-    }
 }

@@ -11,6 +11,6 @@ import retrofit2.http.GET;
  * Created by Tony on 01.11.2016.
  */
 public interface API {
-    @GET("{partymaker/get_parties.py}")
+    @GET("partymaker/get_parties.py")
     Call<Party> getParties();
 }
