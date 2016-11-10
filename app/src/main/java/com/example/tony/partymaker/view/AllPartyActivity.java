@@ -11,29 +11,17 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.tony.partymaker.API;
 import com.example.tony.partymaker.PartyAdapter;
 import com.example.tony.partymaker.R;
 import com.example.tony.partymaker.model.Data;
-import com.example.tony.partymaker.model.Party;
+import com.example.tony.partymaker.presenter.AllPartyPresenter;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AllPartyActivity extends AppCompatActivity {
 
-    private PartyAdapter partyAdapter;
-    private ArrayList<Data> parties = new ArrayList<>();
-    //Разобраться со структурой
-    // fixme: нахрена эти два поля нужны? :)
-    private ArrayList<String> kek = new ArrayList<>();
-    private ArrayList<String> newKek = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private AllPartyPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,50 +30,14 @@ public class AllPartyActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        kek.addAll(newKek);
-
-        final RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view_all);
-        rv.setHasFixedSize(true);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_all);
+        recyclerView.setHasFixedSize(true);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AllPartyActivity.this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rv.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-                                       /* fixme: прост this */
-        partyAdapter = new PartyAdapter(AllPartyActivity.this, parties);
+        presenter = new AllPartyPresenter(this, savedInstanceState);
 
-        rv.setAdapter(partyAdapter);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://52.45.147.109/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        final API service = retrofit.create(API.class);
-
-        // fixme: можно просто service.getPartise().enqueue(...)
-        final Call<Party> call = service.getParties();
-        call.enqueue(new Callback<Party>() {
-            @Override
-            public void onResponse(Call<Party> call, Response<Party> response) {
-                if (response.isSuccessful()) {
-                    int start = parties.size();
-                    List<Data> newParties = response.body().getData();
-                    parties.addAll(newParties);
-
-                    //Заставить адаптер показать новые строчки
-                    partyAdapter.notifyItemRangeInserted(start, newParties.size());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Party> call, Throwable t) {
-                // todo: обработать ошибку
-            }
-        });
-
-
-        // todo
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +46,24 @@ public class AllPartyActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    public void showParties(ArrayList<Data> parties) {
+        recyclerView.setAdapter(new PartyAdapter(this, parties));
+    }
+
+    public void onHttpError(int code) {
+        // todo
+    }
+
+    public void onConnectionError(Throwable t) {
+        // todo
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        presenter.saveState(outState);
     }
 
     @Override

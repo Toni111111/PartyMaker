@@ -22,7 +22,7 @@ public class Party implements Parcelable {
     @SerializedName("data")
     @Expose
     // fixme: зачем создавать новый ArrayList, если в конструкторе создаётся другой?
-    private List<Data> data = new ArrayList<Data>();
+    private ArrayList<Data> data = new ArrayList<Data>();
 
     // fixme: нет конструктора без аргументов. Gson вынужден создавать объект через пень-колоду
 
@@ -63,12 +63,12 @@ public class Party implements Parcelable {
         this.msg = msg;
     }
 
-    public List<Data> getData() {
+    public ArrayList<Data> getData() {
         return data;
     }
 
 
-    public void setData(List<Data> data) {
+    public void setData(ArrayList<Data> data) {
         this.data = data;
     }
 
