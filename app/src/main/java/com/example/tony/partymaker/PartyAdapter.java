@@ -5,12 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tony.partymaker.model.Data;
-
 
 import java.util.ArrayList;
 
@@ -18,6 +16,8 @@ import java.util.ArrayList;
  * Created by Tony on 01.11.2016.
  */
 public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.ViewHolder> {
+
+    // fixme: эти поля могут быть финальными
     private Activity activity;
     private ArrayList<Data> mParties;
 
@@ -27,9 +27,6 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.ViewHolder> 
         this.mParties = mParties;
     }
 
-
-
-
     @Override
     public PartyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view,parent,false);
@@ -38,16 +35,17 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(PartyAdapter.ViewHolder holder, int position) {
-
+        // fixme: (...).setText(String.format(activity.getString(R.string.title_pattern), mParties.get(position).getTitle()))
+        // <string name="title_pattern">Название: %s</string>
         holder.namePartyView.setText("Название: " + mParties.get(position).getTitle());
 
     }
-
     @Override
     public int getItemCount() {
         return mParties.size();
     }
 
+    // fixme: класс и его члены можно сделать package-local, поля — ещё и финальными
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView namePartyView;
         public ImageView imagePartyView;

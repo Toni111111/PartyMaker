@@ -17,10 +17,7 @@ import com.example.tony.partymaker.R;
 import com.example.tony.partymaker.model.Data;
 import com.example.tony.partymaker.model.Party;
 
-
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,12 +26,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class AllPartyActivity extends AppCompatActivity {
 
     private PartyAdapter partyAdapter;
     private ArrayList<Data> parties = new ArrayList<>();
     //Разобраться со структурой
+    // fixme: нахрена эти два поля нужны? :)
     private ArrayList<String> kek = new ArrayList<>();
     private ArrayList<String> newKek = new ArrayList<>();
 
@@ -50,46 +47,45 @@ public class AllPartyActivity extends AppCompatActivity {
         final RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view_all);
         rv.setHasFixedSize(true);
 
-
-
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AllPartyActivity.this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(linearLayoutManager);
-        partyAdapter = new PartyAdapter(AllPartyActivity.this,parties);
+
+                                       /* fixme: прост this */
+        partyAdapter = new PartyAdapter(AllPartyActivity.this, parties);
 
         rv.setAdapter(partyAdapter);
 
-       Retrofit retrofit = new Retrofit.Builder()
-               .baseUrl("http://52.45.147.109/")
-               .addConverterFactory(GsonConverterFactory.create())
-               .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://52.45.147.109/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
         final API service = retrofit.create(API.class);
 
+        // fixme: можно просто service.getPartise().enqueue(...)
         final Call<Party> call = service.getParties();
         call.enqueue(new Callback<Party>() {
             @Override
             public void onResponse(Call<Party> call, Response<Party> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     int start = parties.size();
                     List<Data> newParties = response.body().getData();
                     parties.addAll(newParties);
 
                     //Заставить адаптер показать новые строчки
-                    partyAdapter.notifyItemRangeInserted(start,newParties.size());
+                    partyAdapter.notifyItemRangeInserted(start, newParties.size());
                 }
             }
 
             @Override
             public void onFailure(Call<Party> call, Throwable t) {
-
+                // todo: обработать ошибку
             }
         });
 
 
-
-
-
+        // todo
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

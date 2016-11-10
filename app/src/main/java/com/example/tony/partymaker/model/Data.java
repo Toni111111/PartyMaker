@@ -9,7 +9,12 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Tony on 03.11.2016.
  */
+// fixme: неинформативное имя класса
 public class Data implements Parcelable {
+
+    // fixme: @Expose нужно при конвертации объекта в JSON (а не из JSON) при довольно экзотических настройках.
+    // fixme: Я ни разу в жизни этой аннотацией не воспользовался.
+
     @SerializedName("maxPeople")
     @Expose
     private Integer maxPeople;
@@ -41,6 +46,7 @@ public class Data implements Parcelable {
     @Expose
     private Integer currentPeople;
 
+    // fixme: нет конструктора без аргументов. Gson вынужден создавать объект через пень-колоду
 
     protected Data(Parcel in) {
         description = in.readString();
@@ -73,6 +79,9 @@ public class Data implements Parcelable {
             return new Data[size];
         }
     };
+
+    // fixme: нагенерированные геттеры-сеттеры — плохо:
+    // Студия не подсвечивает фактически неиспользуемые поля, которые можно было бы удалить.
 
     public Integer getMaxPeople() {
         return maxPeople;

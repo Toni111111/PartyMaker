@@ -8,7 +8,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by Tony on 21.10.2016.
@@ -22,8 +21,10 @@ public class Party implements Parcelable {
     private String msg;
     @SerializedName("data")
     @Expose
+    // fixme: зачем создавать новый ArrayList, если в конструкторе создаётся другой?
     private List<Data> data = new ArrayList<Data>();
 
+    // fixme: нет конструктора без аргументов. Gson вынужден создавать объект через пень-колоду
 
     protected Party(Parcel in) {
         msg = in.readString();
@@ -41,6 +42,8 @@ public class Party implements Parcelable {
             return new Party[size];
         }
     };
+
+    // fixme: с неиспользуемыми геттерами/сеттерами то же самое, что в Party
 
     public Integer getCode() {
         return code;
